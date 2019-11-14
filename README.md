@@ -14,7 +14,7 @@ Google Chrome autofill
 
 ## Requirement
 
-## Useage
+## Usage
 
 ## Install
 
@@ -24,4 +24,4 @@ Google Chrome autofill
 
 ## Author
 
-[takewell][https://takewell.dev]
+[takewell](https://takewell.dev)
