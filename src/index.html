@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Place Searches</title>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <meta charset="utf-8" />
+    <style>
+      html,
+      body {
+        margin: 0;
+        padding: 10px;
+      }
+      .form {
+        height: 120px;
+        width: 300px;
+      }
+    </style>
+    <script src="./index.js"></script>
+  </head>
+  <body>
+    <div class="form">
+      <h2>Place Search</h2>
+      <form id="form">
+        <input
+          placeholder="検索"
+          type="text"
+          name="q"
+          value=""
+          aria-label="検索ボックス"
+        />
+        <button type="submit" value="Submit" id="optionsSubmit">Submit</button>
+      </form>
+    </div>
+    <div id="map"></div>
+    <script
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDEZthFPXOusDnp70Ch1u-W4-3GdUiuDbQ&libraries=places&callback=initMap"
+      async
+      defer
+    ></script>
+  </body>
+</html>
