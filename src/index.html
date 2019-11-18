@@ -7,33 +7,50 @@
     <style>
       html,
       body {
-        margin: 0;
+        margin: 2px 0 8px 0;
         padding: 10px;
+        width: 500px;
       }
-      .form {
-        height: 120px;
-        width: 300px;
+      #a-input {
+        font-size: 14px;
+        margin: 2px;
+        height: 23px;
+        width: 70%;
+      }
+      #a-submit , #a-autofill{
+        font-size: 16px;
+        -webkit-box-shadow: none;
+        -moz-box-shadow: none;
+        box-shadow: none;
+        background-color: #2490D0;
+        background-image: -webkit-linear-gradient(top, #2490D0, #2490D0);
+        background-image: -moz-linear-gradient(top, #2490D0, #2490D0);
+        background-image: -ms-linear-gradient(top, #2490D0, #2490D0);
+        background-image: -o-linear-gradient(top, #2490D0, #2490D0);
+        background-image: linear-gradient(top, #2490D0, #2490D0);
+        border: 1px solid #2490D0;
+        color: #fff;
       }
     </style>
     <script src="./index.js"></script>
   </head>
   <body>
-    <div class="form">
-      <h2>Place Search</h2>
-      <form id="form">
-        <input
-          placeholder="検索"
-          type="text"
-          name="q"
-          value=""
-          aria-label="検索ボックス"
-        />
-        <button type="submit" value="Submit" id="optionsSubmit">Submit</button>
-      </form>
-    </div>
+    <h2>住所検索</h2>
+    <input
+      id="a-input"
+      placeholder="検索"
+      type="text"
+      name="q"
+      value=""
+      aria-label="検索ボックス"
+    />
+    <button id="a-submit" type="submit" value="Submit">検索</button>
+    <button id="a-autofill" type="submit" value="Auto Fill">爆速入力</button>
+    <div id="a-result-area"></div>
+
     <div id="map"></div>
     <script
-      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDEZthFPXOusDnp70Ch1u-W4-3GdUiuDbQ&libraries=places&callback=initMap"
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDEZthFPXOusDnp70Ch1u-W4-3GdUiuDbQ&libraries=places&callback=main"
       async
       defer
     ></script>

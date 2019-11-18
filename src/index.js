@@ -1,36 +1,109 @@
-var map;
-var service;
-var infowindow;
+var state = { name: null, address: null, phoneNumber: null };
 
-function initMap() {
-  infowindow = new google.maps.InfoWindow();
-  map = new google.maps.Map(document.getElementById("map"), { zoom: 15 });
+function main() {
+  const map = new google.maps.Map(document.getElementById("map"), { zoom: 15 });
+  const service = new google.maps.places.PlacesService(map);
+  const Input = document.getElementById("a-input");
+  const Submit = document.getElementById("a-submit");
+  const Autofill = document.getElementById("a-autofill");
+  const ResultArea = document.getElementById("a-result-area");
 
-  const request = {
-    query: "おんどや 湯河原",
-    fields: ["name", "geometry", "formatted_address"]
+  const removeAllChildren = element => {
+    while (element.firstChild) {
+      element.removeChild(element.firstChild);
+    }
   };
 
-  var service = new google.maps.places.PlacesService(map);
-
-  service.findPlaceFromQuery(request, function(results, status) {
-    if (status === google.maps.places.PlacesServiceStatus.OK) {
-      for (var i = 0; i < results.length; i++) {
-        createMarker(results[i]);
-      }
-      map.setCenter(results[0].geometry.location);
+  Input.onkeydown = event => {
+    if (event.keyCode === 13) {
+      Submit.onclick();
     }
-  });
-}
+  };
 
-function createMarker(place) {
-  var marker = new google.maps.Marker({
-    map: map,
-    position: place.geometry.location
-  });
+  Submit.onclick = async () => {
+    const query = Input.value;
+    if (query.length === 0) return;
+    const request = {
+      query: query,
+      fields: [
+        "name",
+        "geometry",
+        "formatted_address",
+        "icon",
+        "photos",
+        "place_id"
+      ]
+    };
 
-  google.maps.event.addListener(marker, "click", function() {
-    infowindow.setContent(place.name);
-    infowindow.open(map, this);
-  });
+    const places = await new Promise((resolve, reject) => {
+      return service.findPlaceFromQuery(request, (res, status) => {
+        if (status === google.maps.places.PlacesServiceStatus.OK) {
+          return resolve(res);
+        }
+        return reject(new Error());
+      });
+    });
+
+    for (let i = 0; i < places.length; i++) {
+      const p = places[i];
+      const phoneNumber = await new Promise((resolve, reject) => {
+        return service.getDetails(
+          { placeId: p.place_id, fields: ["formatted_phone_number"] },
+          (res, status) => {
+            if (status === google.maps.places.PlacesServiceStatus.OK) {
+              return resolve(res.formatted_phone_number);
+            }
+            return reject();
+          }
+        );
+      });
+
+      removeAllChildren(ResultArea);
+
+      const header = document.createElement("h3");
+      header.innerText = `${i + 1}. 施設名: ${p.name}`;
+      state.name = p.name;
+      ResultArea.appendChild(header);
+
+      const paragraph1 = document.createElement("p");
+      paragraph1.innerText = '住所： ' + p.formatted_address;
+      ResultArea.appendChild(paragraph1);
+      state.address = p.formatted_address;
+
+      if (phoneNumber) {
+        const paragraph2 = document.createElement("p");
+        paragraph2.innerText = '電話番号： ' + phoneNumber;
+        ResultArea.appendChild(paragraph2);
+        state.phoneNumber = phoneNumber;
+      }
+
+      // const icon = document.createElement("img");
+      // icon.src = p.icon;
+      // ResultArea.appendChild(icon);
+
+      if (p.photos) {
+        const photo = document.createElement("img");
+        photo.src = p.photos[0].getUrl();
+        photo.style.width = "300px";
+        photo.style.borderRadius = '20px';
+        ResultArea.appendChild(photo);
+      }
+    }
+  };
+
+  Autofill.onclick = () => {
+    chrome.tabs.query({ active: true, currentWindow: true }, tabs => {
+      chrome.tabs.sendMessage(
+        tabs[0].id,
+        {
+          name: state.name,
+          address: state.address,
+          phoneNumber: state.phoneNumber
+        },
+        response => {
+          console.log(response);
+        }
+      );
+    });
+  };
 }
